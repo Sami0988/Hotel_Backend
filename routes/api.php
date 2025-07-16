@@ -1,0 +1,18 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\RoomController;
+
+Route::prefix('rooms')->group(function () {
+    Route::get('/', [RoomController::class, 'index']);
+    Route::post('/', [RoomController::class, 'store']);
+    Route::get('/{room}', [RoomController::class, 'show']);
+    Route::put('/{room}', [RoomController::class, 'update']);
+    Route::patch('/{room}', [RoomController::class, 'update']);
+    Route::delete('/{room}', [RoomController::class, 'destroy']);
+});
+
+
+Route::fallback(function () {
+    return response()->json(['message' => 'Not Found'], 404);
+});
