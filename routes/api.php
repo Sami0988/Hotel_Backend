@@ -3,6 +3,10 @@
 use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\RoomController;
+use App\Http\Controllers\Api\TableController;
+use App\Http\Controllers\Api\BookingController;
+
+
 
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -16,6 +20,18 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('tables', TableController::class);
+});
+
+
+
+
+Route::middleware(('auth-sanctum'))->group(function () {
+    Route::apiResource('bookings', BookingController::class);
+}); 
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');

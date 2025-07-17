@@ -17,5 +17,9 @@ class Room extends Model
     'price_per_night',
     'status',
 ];
+public function bookings()
+{
+    return $this->morphMany(Booking::class, 'bookable');
+}
 
 }
