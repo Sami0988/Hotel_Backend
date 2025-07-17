@@ -24,5 +24,8 @@ class DatabaseSeeder extends Seeder
     RoomSeeder::class,
 ]);
 
+$this->call(UserSeeder::class);
+
+
     }
 }

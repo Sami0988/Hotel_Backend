@@ -1,12 +1,18 @@
 <?php
 
 use App\Models\Room;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    // You can set up any necessary initialization here
+    // Create and authenticate a user for Sanctum before each test
+    Sanctum::actingAs(
+        User::factory()->create(),
+        ['*'] // All abilities
+    );
 });
 
 it('can list rooms', function () {
