@@ -4,18 +4,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Booking extends Model
+class TableReservation extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'room_id', 'check_in', 'check_out',
-        'guests_count', 'total_price', 'status', 'special_requests'
+        'user_id', 'table_id', 'reservation_time',
+        'guests_count', 'status', 'special_requests'
     ];
 
     protected $casts = [
-        'check_in' => 'date',
-        'check_out' => 'date',
+        'reservation_time' => 'datetime',
     ];
 
     public function user()
@@ -23,8 +22,8 @@ class Booking extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function room()
+    public function table()
     {
-        return $this->belongsTo(Room::class);
+        return $this->belongsTo(Table::class);
     }
 }

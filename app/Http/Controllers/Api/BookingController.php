@@ -1,59 +1,82 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\User;
+
+use App\Models\Room;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class BookingController extends Controller
 {
-    public function index()
-    {
-        return Booking::with('bookable')->paginate(10);
+
+    // List all bookings
+  public function index()
+{
+    $user = Auth::user();
+
+    if (!in_array($user->role, ['admin', 'employee'])) {
+        return response()->json(['message' => 'Unauthorized'], 403);
     }
 
+    // Your actual logic here
+    return Booking::with(['user', 'room'])->get();
+}
+
+
+    // Store a new booking
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'bookable_type' => 'required|string',
-            'bookable_id' => 'required|integer',
-            'user_id' => 'nullable|integer',
-            'guest_name' => 'nullable|string',
-            'guest_email' => 'nullable|email',
-            'guest_phone' => 'nullable|string',
-            'start_time' => 'required|date',
-            'end_time' => 'required|date|after:start_time',
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'room_id' => 'required|exists:rooms,id',
+            'check_in' => 'required|date|after_or_equal:today',
+            'check_out' => 'required|date|after:check_in',
+            'guests_count' => 'required|integer|min:1',
+            'total_price' => 'required|numeric|min:0',
+            'status' => 'in:pending,confirmed,cancelled,completed',
+            'special_requests' => 'nullable|string',
         ]);
 
-        $booking = Booking::create($data);
-
+        $booking = Booking::create($validated);
         return response()->json($booking, 201);
     }
 
-    public function show(Booking $booking)
+    // Show a single booking
+    public function show($id)
     {
-        $booking->load('bookable');
-        return $booking;
-    }
-
-    public function update(Request $request, Booking $booking)
-    {
-        $data = $request->validate([
-            'start_time' => 'sometimes|date',
-            'end_time' => 'sometimes|date|after:start_time',
-            'guest_name' => 'sometimes|string',
-            'guest_email' => 'sometimes|email',
-            'guest_phone' => 'sometimes|string',
-            // you can also allow updating bookable_type and bookable_id if you want
-        ]);
-        $booking->update($data);
-
+        $booking = Booking::with(['user', 'room'])->findOrFail($id);
         return response()->json($booking);
     }
 
-    public function destroy(Booking $booking)
+    // Update an existing booking
+    public function update(Request $request, $id)
     {
+        $booking = Booking::findOrFail($id);
+
+        $validated = $request->validate([
+            'check_in' => 'sometimes|date|after_or_equal:today',
+            'check_out' => 'sometimes|date|after:check_in',
+            'guests_count' => 'sometimes|integer|min:1',
+            'total_price' => 'sometimes|numeric|min:0',
+            'status' => 'sometimes|in:pending,confirmed,cancelled,completed',
+            'special_requests' => 'nullable|string',
+        ]);
+
+        $booking->update($validated);
+        return response()->json($booking);
+    }
+
+    // Delete a booking
+    public function destroy($id)
+    {
+        $booking = Booking::findOrFail($id);
         $booking->delete();
-        return response()->json(null, 204);
+
+        return response()->json(['message' => 'Booking deleted successfully']);
     }
 }

@@ -26,12 +26,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('tables', TableController::class);
 });
 
-
-
-
-Route::middleware(('auth-sanctum'))->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('bookings', BookingController::class);
-}); 
+});
+
+
+
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
