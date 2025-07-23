@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+    use App\Models\Booking;
+use App\Policies\TableReservationPolicy;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,4 +23,10 @@ class AppServiceProvider extends ServiceProvider
     {
         //
     }
+
+
+protected $policies = [
+    Booking::class => TableReservationPolicy::class,
+];
+
 }

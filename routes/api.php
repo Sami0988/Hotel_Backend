@@ -5,9 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\TableController;
 use App\Http\Controllers\Api\BookingController;
-
-
-
+use App\Http\Controllers\Api\TableReservationController;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('rooms')->group(function () {
@@ -31,6 +29,10 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
+Route::apiResource('table-reservations', TableReservationController::class);
+Route::get('tables/available', [TableReservationController::class, 'availableTables']);
+
+
 
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -39,4 +41,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 
 Route::fallback(function () {
     return response()->json(['message' => 'Not Found'], 404);
+});
+
+Route::get('/my_test', function () {
+    return response()->json(['message' => 'Test successful']);
 });

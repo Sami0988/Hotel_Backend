@@ -9,7 +9,7 @@ class TableReservation extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'table_id', 'reservation_time',
+        'name', 'phone', 'table_id', 'reservation_time',
         'guests_count', 'status', 'special_requests'
     ];
 
@@ -17,13 +17,9 @@ class TableReservation extends Model
         'reservation_time' => 'datetime',
     ];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
     public function table()
     {
         return $this->belongsTo(Table::class);
     }
 }
+
