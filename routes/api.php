@@ -30,7 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 Route::apiResource('table-reservations', TableReservationController::class);
-Route::get('tables/available', [TableReservationController::class, 'availableTables']);
+Route::get('tablesReservation/available', [TableReservationController::class, 'availableTables']);
 
 
 
