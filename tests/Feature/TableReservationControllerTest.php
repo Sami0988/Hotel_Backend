@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    // Create a test table for reservations
+    // Cre
     $this->table = Table::factory()->create([
         'capacity' => 4,
         'status' => 'available',
