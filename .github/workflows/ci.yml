@@ -14,9 +14,9 @@ jobs:
       postgres:
         image: postgres:13
         env:
-          POSTGRES_USER: postgres   # Superuser (default)
-          POSTGRES_PASSWORD: sami   # Your password
-          POSTGRES_DB: hotel_backend  # Your DB name
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: sami
+          POSTGRES_DB: hotel_backend
         ports:
           - 5432:5432
         options: >-
@@ -27,11 +27,11 @@ jobs:
 
     env:
       DB_CONNECTION: pgsql
-      DB_HOST: postgres  # Matches the service name
+      DB_HOST: localhost  # Changed from 'postgres' to 'localhost'
       DB_PORT: 5432
       DB_DATABASE: hotel_backend
-      DB_USERNAME: postgres  # User = postgres
-      DB_PASSWORD: sami     # Password = sami
+      DB_USERNAME: postgres
+      DB_PASSWORD: sami
       APP_ENV: testing
       APP_KEY: ${{ secrets.APP_KEY }}
 
@@ -52,8 +52,16 @@ jobs:
       - name: Generate app key
         run: php artisan key:generate --force
 
-      - name: Wait for PostgreSQL (5s)
-        run: sleep 5  # Ensures DB is ready
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..10}; do
+            if pg_isready -h localhost -U postgres -d hotel_backend; then
+              echo "PostgreSQL is ready!"
+              break
+            fi
+            echo "Waiting for PostgreSQL... ($i/10)"
+            sleep 3
+          done
 
       - name: Run migrations
         run: php artisan migrate --force
