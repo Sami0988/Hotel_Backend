@@ -2,9 +2,9 @@ name: Laravel CI
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
   laravel-tests:
@@ -17,7 +17,8 @@ jobs:
           POSTGRES_USER: ${{ secrets.DB_USERNAME }}
           POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
           POSTGRES_DB: ${{ secrets.DB_DATABASE }}
-
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -41,7 +42,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: '8.2'
           extensions: mbstring, pgsql, pdo, pdo_pgsql
           tools: composer
 
@@ -49,7 +50,7 @@ jobs:
         run: composer install --no-progress --prefer-dist --optimize-autoloader
 
       - name: Generate app key
-        run: php artisan key:generate
+        run: php artisan key:generate --force
 
       - name: Run migrations
         run: php artisan migrate --force
