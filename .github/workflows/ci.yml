@@ -14,9 +14,9 @@ jobs:
       postgres:
         image: postgres:13
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: sami
-          POSTGRES_DB: hotel_test
+          POSTGRES_USER: ${{ secrets.DB_USERNAME }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.DB_DATABASE }}
         ports:
           - 5432:5432
         options: >-
@@ -27,13 +27,13 @@ jobs:
 
     env:
       APP_ENV: testing
-      APP_KEY: base64:uw5YKLpv0Fup26J1ZR/iZNOWZYcbvsM2x2EjHa/HxgY=
+      APP_KEY: ${{ secrets.APP_KEY }}
       DB_CONNECTION: pgsql
       DB_HOST: 127.0.0.1
       DB_PORT: 5432
-      DB_DATABASE: hotel_test
-      DB_USERNAME: postgres
-      DB_PASSWORD: sami
+      DB_DATABASE: ${{ secrets.DB_DATABASE }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
     steps:
       - name: Checkout code
@@ -47,8 +47,12 @@ jobs:
           tools: composer
           coverage: pcov
 
-      - name: Copy .env.testing
-        run: cp .env.testing .env
+      - name: Prepare environment
+        run: |
+          cp .env.testing .env
+          sed -i "s/DB_DATABASE=.*/DB_DATABASE=${{ secrets.DB_DATABASE }}/" .env
+          sed -i "s/DB_USERNAME=.*/DB_USERNAME=${{ secrets.DB_USERNAME }}/" .env
+          sed -i "s/DB_PASSWORD=.*/DB_PASSWORD=${{ secrets.DB_PASSWORD }}/" .env
 
       - name: Install dependencies
         run: composer install --no-progress --prefer-dist --optimize-autoloader
@@ -56,7 +60,7 @@ jobs:
       - name: Wait for PostgreSQL
         run: |
           for i in {1..10}; do
-            if pg_isready -h 127.0.0.1 -U postgres -d hotel_test; then
+            if pg_isready -h 127.0.0.1 -U ${{ secrets.DB_USERNAME }} -d ${{ secrets.DB_DATABASE }}; then
               echo "PostgreSQL is ready!"
               break
             fi
